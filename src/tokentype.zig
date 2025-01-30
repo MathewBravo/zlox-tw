@@ -16,6 +16,8 @@ pub const TokenType = enum {
     equal_equal,
     less,
     less_equal,
+    greater,
+    greater_equal,
     identifier,
     string,
     number,

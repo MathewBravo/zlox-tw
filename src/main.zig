@@ -51,11 +51,11 @@ fn run(source: []u8) !void {
     std.debug.print("Source: {s}\n", .{source});
 }
 
-fn generateError(line: i32, message: []u8) !void {
+pub fn generateError(line: i32, message: []u8) !void {
     try reportError(line, "", message);
 }
 
-fn reportError(line: i32, where: []u8, message: []u8) !void {
+pub fn reportError(line: i32, where: []u8, message: []u8) !void {
     const stdout = std.io.getStdOut().writer();
 
     stdout.print("[line {d}] Error {s}: {s}\n", .{ line, where, message });

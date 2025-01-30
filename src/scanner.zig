@@ -1,6 +1,7 @@
 const std = @import("std");
 const t = @import("token.zig");
 const tt = @import("tokentype.zig");
+const e = @import("main.zig");
 
 const Scanner = struct {
     source: []const u8,
@@ -54,7 +55,24 @@ const Scanner = struct {
             '+' => self.addTokenNoLiteral(tt.TokenType.plus),
             ';' => self.addTokenNoLiteral(tt.TokenType.semicolon),
             '*' => self.addTokenNoLiteral(tt.TokenType.star),
-            else => {},
+            '!' => self.addTokenNoLiteral(if (match('=')) tt.TokenType.bang_equal else tt.TokenType.bang),
+            '=' => self.addTokenNoLiteral(if (match('=')) tt.TokenType.equal_equal else tt.TokenType.equal),
+            '<' => self.addTokenNoLiteral(if (match('=')) tt.TokenType.less_equal else tt.TokenType.less),
+            '>' => self.addTokenNoLiteral(if (match('=')) tt.TokenType.greater_equal else tt.TokenType.greater),
+            '/' => self.addTokenNoLiteral(if (self.match('/')) {
+                if (self.peek() == '/') {
+                    while (self.peek() != '\n' and !self.isAtEnd()) {
+                        self.advance();
+                    }
+                } else {
+                    addToken(tt.TokenType.slash);
+                }
+            }),
+            ' ' => {},
+            '\r' => {},
+            '\t' => {},
+            '\n' => self.line += 1,
+            else => e.generateError(self.line, "Unexpected character."),
         }
     }
 
@@ -76,5 +94,18 @@ const Scanner = struct {
             .literal = literal,
             .line = self.line,
         });
+    }
+
+    fn match(self: *Scanner, expected: u8) bool {
+        if (isAtEnd()) return false;
+        if (self.source[self.current] != expected) return false;
+
+        self.current += 1;
+        return true;
+    }
+
+    fn peek(self: *Scanner) u8 {
+        if (isAtEnd()) return 0;
+        return self.source[self.current];
     }
 };
